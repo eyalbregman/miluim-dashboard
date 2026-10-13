@@ -162,6 +162,20 @@ details.rules ul { margin: 8px 0 2px; padding-inline-start: 1.2em; display: grid
 .check.good .v { color: var(--ok) } .check.bad .v { color: var(--warn) }
 .note-bad { color: var(--warn); font-size: .88rem }
 .dsec { display: grid; gap: 6px }
+.dsec-h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px }
+.fnote { display: inline-flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--accent) }
+.thf { display: inline-flex; align-items: center; gap: 6px }
+.fbtn { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; display: grid; place-items: center; padding: 0 }
+.fbtn:hover { color: var(--fg); border-color: var(--accent) }
+.fbtn.on { background: var(--accent); border-color: var(--accent); color: var(--surface) }
+.fbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.fpop { position: fixed; z-index: 20; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 8px 28px rgba(0, 0, 0, .22); padding: 10px; display: grid; gap: 8px; direction: rtl }
+.fpop-t { font-size: .82rem; font-weight: 500; color: var(--muted) }
+.flist { max-height: 220px; overflow: auto; display: grid; border-top: 1px solid var(--line); padding-top: 4px }
+.fitem { display: flex; align-items: center; gap: 8px; font-size: .88rem; padding: 3px 2px; cursor: pointer }
+.fitem input { accent-color: var(--accent) }
+.fitem.fall { font-weight: 500 }
+.fpop-b { display: flex; gap: 6px; flex-wrap: wrap }
 .dsec h3 { margin: 0; font-size: .95rem; font-weight: 700 }
 .dsec h3.good { color: var(--ok) } .dsec h3.bad { color: var(--warn) }
 .daytable col.d-name { width: 20% } .daytable col.d-role { width: 15% } .daytable col.d-ma { width: 100px } .daytable col.d-team { width: 110px } .daytable col.d-req { width: 200px }
@@ -216,7 +230,7 @@ details.rules ul { margin: 8px 0 2px; padding-inline-start: 1.2em; display: grid
   </div>
 </div>
 
-<script>window.P2_ENC = {"salt": "dWOVBF6GMLqNAYof8yODcw==", "iv": "rPyDysgQh0NyJJL5", "iter": 600000, "ct": "q5y2NAdpwu43sBaSikeOxuQjMPsTap/2E3Xk8iIUsW6UwRza27dR7wLwoMUNBGvUQBWGtBbuI8AutT6YzRD9bGKAWO1yTOfGCDOEoaz5o4Fxrqhf4ULxoo0OzedEKVl+yD7WCNAI/kuVcz/nA2EP03Gw81n0fj4OW9PnfFxnt6QNr+dRWX1GsMinF9NUNiJNLRYMeY1j5kzNZuphL7r3xuFsQt4hs7isxmguauGHF+8Rcy3iiisXLpQZ+rF96hN+manZkFa/lzNm8YarBXOU88nz8IAlAhmHo30fNM9PwNtdQx33Y3k5fk3IXMkFZlsFAWrd4NNcilhU+scLLgsTFuZVyVsX4Grh6tdIuzLrNEQO18GfGldeF4c3unNAM5yZT4kFHjAfg6eoHolvGGVPdGNwE6ZYtFLgI8iYHcLTKz8G9EPHlwGOiyvIDdJbhKYR5MPRICpxDZdv5V659L7MYKu6e0XQXWoN4UUmMu1cGS74iHZ8nDGEhxJR7cTAtFx/6WUZoSxCjeU6Xa9G6fpOpkrU4oEWk+h+Esgzs4HEBpnwnQfgiFdYiznVKSAIyRDg0NNFJRh2V79gJnTOOmrIFeBNfbe162u8qpovZl/QQehMb40bWaD/IPBOLD7iqPKkSLCenEZ7Kv+9ZwXQCGWEylIOFhwKOWyz8pOD6Ax14Ddk6jWAYfDWmqL3af3UuFrAUiOMgZ0xfy7aMXJjYl9hWs955Gsupd6L0Ot9yrlwieyPMfACoPJNoyGFI6kR7LKzmQXIzh5+47//TPnGOhHqNuKi1l787r7tLPPZ30uDcv1MMQQPR9V5mUqo5uiBc9/bvbXyFOr2qV6Iq9ty1cRpylTlsskO7xS25PnY6XPRWrhge8cPiJY+x/SmcNsBklqo5fEV3zfvwKOYhhZpo+i+gZ4NYuuNa6c12eR7Dx0dgyyh/pWG/04uBVozs4qdl7WSPbPCtlHo++7D+6C6LLOyLg2YIq9zfUlDj5bFNuQyuAVzX4gYXEaTT/zasYplndjzEnk7LdOE5flrq6tJukzsAp34VEjK6A0uxcoKLrXuJoi4jk/N/Ef7j13xmw3IACLNi/R1/vl5m4EVoZxx5WkU/V3pNxMoazRWKD7TbJtXPOkP4bcSCu1vM/YRYmJc1EF+PjDflzI+QLTR9I6lcjwOk6RYuGf5sgAYYlq4oR7PPdSBbdvM6/zRCw/6R5naS5xCM2/U+SAscSfEmRk8VvXN5bfoRd9L6GF077CD4+JNyyENY7FABTiiZui4zLeLmjyzj7895zdSXMIBt9IDz5ypbCge85T6z8yC3oTSZkHirWEiryMLdqDnQGgV5aJiHMBxOP6J2tMR6QOX9VzN6fOhTeWYBHGU3lT49y0U/CgyKV5UsP+TvnuGUR7Lb6IBd2uZKueTpchSiJKK8PgsDFFd483UF3BGiKhvZYs9lxBu6l+TnANYFXgvIlABBaqHTxoekEJbCtiVK1l24+uFbQPQKxLfhLcuV+S1aH0rlHPuO9vYJG9arMJ2Chu4iffIqb2c6QE506G8HmVt9HDNy0kioQ6m6ozerA6FM6fzUXL4vEYeyfniP/0tL1M1/LJ9Y5eirXhzIQvAuwlytCnZAI2plXItOhVNOMtZCF/NFEqp/r3jh3OMjMbmVES838sPGGP5WkPWPfSlBprG9AgJyuq+Gl150zjVjkdYJtpQvjXvnysooXfzpor9tudZKc9RMbbIx6HzF7ywNznLiKmZVNOF+EIZY3j3LySUGAOXPsBImtF0N6rtP2x5reQOgQc/eBrqCzwxD0LaAnDTaaVPocSRfZxZHVsEp4vrMX0+Nri0PqWM3SdKCicdALHQz6qDC5nemtLUyfk0y4soXJj33IJ+L8Uc7WDFQeeDQQw/WFRuUMD0VPBI2BNeLSoKTF1bK275nJbTDzQj9tjGcUu2oPjoaCMm+Bv4fnuaCMwR7P1MSRAaNwsvZAwqzG3QJ1zTv2+HkcgPudADsfyo4JYqS6qDGhq1zpj8S3iIdBsb7ITOssIiW8qAnhOeiYRfDB7ZuKJUmBxdILea8YWd8DPy1XIbuodhFSUWKD+cbaR3UX+xtFdqLyrD5uQomVvvU97gffwlyHidAXQFeVruJ4bbxDkanrbNzZgJZE8ywnLlEBDp7BDDX7rcHBXVh1jhKumrHNjU46oo84nvKfdYnHHXnsPCUyyAIM5JS2uuglkgVvr792D/Mx9yjBxo1pjgzWnH4n9qyfi2H4fnuk3CjtPMPgqqUfMPEgNEYFkCqB81X6sjsiHPirrDtFBhfAB0Cr/OhAiWuCSqvjqdYPlg9kLeONSahxFpyKUkQFVsomYsU3w+wP9U+z/ah0gwXEpXIm+lsaXIiyejivf+N6okr9RZb6+nFBQt7mZLF6xS5LE7kNSAjXTEXEX03pkKacIbKUBJ7uVAFv5NqB2GKQxIHn6h+x3vwpQYHKiFE3x7coHPBNGwvjPyb8Co4kfikduSsPLSEqw7NyDzgcXHZ4nP4x0Sb3KhHK+MMEG6RjpaKiaq15ZPNi9BUjCPTC0vm4Q1RFxIBQi1LyCvF0dxVOGAzy3VlMC1829hgfRjDSUV5scFAYD/0xn0y10W7nanIvV7024fV0oT90/AtBhFKF82ocxaOzu5u49Q+IWZlLdT3zXEmxIY22XhbCxp2ChUobkG/aSX6TXaVST66NdWkVBGbNyXBjKAmCR+p3CMoyRK0pxJ/EnuTTdZmULV7jN9bnutvMxfAYLFZAiITbNFqEv8kW/1bGva4J6/uJypO3u0m9OYK/e2jLVK95YuMvPUszS1qgqhIdK3x38qFDix3BdPbA9X9JcJyNcUUeBrQRl/PcyM0OvwFZw6LQEzxoxgCu+AtifeLS5rQeAnHllbMiAh168wqiO1J1pz6wEbTSpTd2QvlCDRUSMW1uZJb0pBrRE7dVruKnm1+a9/Q3TtIvOLEEAXYpOu2d8aEKqI7BVBGwOQCCjj/QXqfY7P8OO/uJloiCebBo2lNLjKJN4YzfomrBugszB6B3btJKJQpMk23qcgP+2+4shceFIESXDDfXhU6SV5IPeZdfiNXRJnh1HB2CDtXhenlEP95+M241rONfC7zd+uu1fsRxwyV/SOy5Infe9Yv1ZUZh5bvAER5Teqqv7rSCn40q5hlQaRPeQgtvH4LtWc2NJsvFWRfBOQFwENGR3oYNUAhyfi0U37YSnApHRC74s2XadD6r/wdorF1rO7/gZSe8knl5TbbVFyClCwZEU87bLfS94Zbi9JrAFLim51ekJUVO3rjZy+Sxjfx8pnDu3nlTeMCaRD3pnVwzoyQSQpmtakDGeS1jEDDeP3anQVc+UrUElXIyUPzQByPKQZ95BDKI3hTufDs05o3IeR9oL9xpNh/Y9V43jK8Fc38rbAolJB9/4PbYsg/vI2Nbba+9VAT2XEgV0NGfrZrEPAJ9gcnfltG4MyMXU5w3M67Fi2QV3vIySQ8QKsdKREYlBbcoqu4Yz09oF8WGoPNn0MgDrnuJY6By105FxC0LzYogy2/mOsZ9/z8+vPArB8Y74s5KAYxYg157VMrArSvXxgn38bfG7F+W0SLITORoIXGjh3mCnqWR+M4Qes8TNqgTAQwFCJyhpNJVeDcLKdAZIbZCYZ3E8dNxKYsHJpAqKPauLbT8vg3FdwBQ4zRE234yx9383b1JOnZbPZ2sAMVtL6qe7oB6De4mDKcm8MqNgI8zNhAEyRr6QRiKa/KrJcZhjjYjIEHK8MZbA8TW11YpUaMNhSJaEx/m20AB0/c22Qqg+NmqTcTd0vZHfLEUQJA7fsFg3NNX4ss0Em/bpdK0HeEjkb39Mcj1NssRnIzyGP82HK3QhfVGqyM0FdUp8yNV0zA9fO4S4CmsIoONyPq2F5CIMN16eFv0U9sD6a+2uTiwtQGyMv9L1TmqXQfOUzxYMs7RXeJLZMNqil8WdId+WcBSq/is+bZqLIfqEVRpey8bIyqkn0oko2etQFoGAu8o5O6CHGqMwIYPCXoU/2AzHlSMiYEu45KD3GACrCKTHuAHs70F2Dz+GAcDblgQTd0/7dQ+sGyGAY3bVn/Hphtcnm9Jknfa8eBu/+P0IKZY79gWPCTuvDfAfuywNw983D8gQzPKwJt9U111geDVLoY/WMjQlicsSyY1b28tReRt8Ph5BAUmFRMMJZWHoHOP8H4UNKFc3oIj8PHAQXnaFKiC+6Et2tneDibzE8bYHYGAVwW9zpiIZdD8YzlgkNRXHEFD+kI6urfdGbrcEnT15C2I4VKuSHqdqU8zxUyRLY5wB0dh1StEPvlajBShVnrdoxyo039eUyxYXMZHBkrl/8+kJ8977xGlxJROwjNeT34iSvmOTbumgfiKdNOk/rqDYAdINr4poXJdRCfegPajUfXBLAshHTaXazUg9xn3QERdADFXasM+84kBkzVeyeA9deoDx0uo+MJRCNmXodt6bkyPjaJ23sColycdessaDUdNeUQNWKMku4G4bV9f2+NaJ/umnNVrwi22Hj2hgrigCHW0I2xEOojs5KdqjlhdAi6zKd+ypuKwz4G9KfovjRJKodc5kLwwaW2w/KmQmRokj268VPIzqMUZpp2/tLAjEyk7s3jq5O0R9PGb4y5jCSyYRi+p54emyZnbTLI1iEncS3YABiIy2eG9paW8QYangSTd59571KkrRfgui70FkkILVfD33R0bhhvoMQk/olXdasAR5qroZmuKuw/HCOcfXrj5yFiZGTUcxk3b0tE0n+y2vkdi6uPIEZ8J2HN+AzScQPmsOOkoIz8kKAT/RA0s+TyswyLS3wNwinzsVo13dVMfNLkeaBibZwbB8leVeiSP2Q6eVP27MDNs38mjSXqRAGiOFWb+aGWCOKVq9nCVEfomuwS4h+QXOn8vc0Wpv1xYLqxZqSQHldBYxwIVykzDNY7fUPBcW7LUZnyGbZZx2rCqrD2GL/nM30iP6t1pK/a8W9qaJwa27Elj+R/c9pwPaV4VPZHp7ieHmpd8d7gxMdegZt8S6kHe9ymsH0p5rtjIbjo5nNKTQxHIU3jjT1+6UVNgU8FpWsoEnneyQKrcGWU4uUCbd06uE7S00/iU6de8micdPyPt9lRi32FdhUYw4I5PiydFoLF6lyz0ng5ruWKl4TONPUATErJ5AhzVXCzMXFPlRY53BPf6syBfllzpe3ECyLxNrgGnLwtp1M9Uw9tHZfrL9J9KiO9sC5BBoRJo822BuiDKNA2yB0V58svA++Ud8vSfgoSzDH7a6JKwC98ZBnE+quoohdq3ZTotSWQcpydYhvW+UqSc4/NmCI6Qac+on7A3QWsJ+X48jXqBF921MnFPNOw/GKeb3cf10Goezi1v2SfRFjN34qGmdTMUgYtdM45bJb9ywmEEJxQMAP6co6miJzOip6yfxlh4iAreKHH5EqHKP5GJ4v+2OhClokR1+EvnZZ76gFbk+DPjBDMavxOB6IkJjYJsM6zWZx3HA3ZKoJWfiHiRmI3QJAwnty568/NkrR8ZSgnDbPyqfQPxRopE78i450O6HwI+X0sTm9l6/mmsKbRr+Q+eXe3BwG0hY9cZ9x1iePKNKhDxV706Zu0vRSgalzqma8Js2yZtKllHoz3vTkiGWE/ROaa8VI7alwLsZNk+EM8QcNYsF7s/DD+QVCVnoCmBtYJ5UsFwrPQPVQhixA5dvIcH2y7F9LfZ/dNLCvWnlYHkSJz85wVYq6rpim56NA70WIcAvi4LZx6EPiaC62eqMnKqf0FmhPiviPuYCxN4zeVVDw85UouxrKserBhwp4aifCIsz8Xz5EnLpge1DEiGo74PLEUCwkmoKPrhV2n4KYobAU4jHOKpHKF4LJd1+hmII1UJN3JBLnm2B5metQTXEAU84I14mZJOU8BYkymc01h8gnK/zRWyMg19F0/EmvqOgw6j7ugMpudwx84/7+N+ukeAVFMb6oMw2FV9uRkpnknGMv6p+GCXgdIMs4KfPTlhyOg+B+9w0EM/6uVdNN7yOgqxDjzAA3pBHXcAn6IUUqwP6sMjfyaQ/QaVdZ6SnaxB5TGrpFQCTbfFCYcPcmlTNtBjni1iR/v/bGZtu0VUxXsb0O9R93SAw+vs+jqUzl1VVLsZgAg+IKdGzkC9OC2Hyc0TggC7wkA3ackYBEhGmP/4HVPDpB+nN8tMXDtWuMEL+fQy3FlThoErZzaNg/Jwmbii2ER4kSVEFRa3KCbh6TL0/yE/iTFvwP3xHEHoHpILyHmEnU7UmpMtyW1+kNa4VfHyc8iMQkOJXAsGAK6vY9e5gayWDrUPrFPUPoXXOaamdj/AhLfGbusgU8gbOdrcelMcvqk/y2d+Mux9QlBWek8fHW+99kA34u/wio7SOZv6zR/+Gi+mmZ4smuED5ZZirIWhk3NkPMJ3l8RkreqlZhT8uNCSi7wTTWsp41+iZJYZlzdkwA8e0bQkif1u/yHxXSWN2eMjATwjF1XgVeGOj+SqjC1MBf7J6GsSzA3nYFYaJTvwXK9tkbA4PLCn+bXphVsJ+vtQsSmDMy6o0vAfgHvgZegY3+ddWOU1psUBmKx6xrNA54tYvTtwqJiHMaujqjkJCimFiXehNoAxWs/uVMmzotJzL6NnDeJbXl/bLvnJ3Qp2VI9eAQgEHZjACSBtL9THXpkov3tqpyA1SVD+XroCnHw3vJK+sil/Geis0/Q5tYlTWDltB0hFEFz8e03Bt7CnMWETGY7w=="}; window.P2_API = "https://script.google.com/macros/s/AKfycbzpcryE1HXwn3krnd--p_nsK8O83V2PDF_JBHl8u557xyVzi59PHZqUQYryKEywnGeJ/exec";</script>
+<script>window.P2_ENC = {"salt": "CXc+EsKq6HCLCz7xuuWIDg==", "iv": "6psBLupYvPhBBM5f", "iter": 600000, "ct": "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"}; window.P2_API = "https://script.google.com/macros/s/AKfycbzpcryE1HXwn3krnd--p_nsK8O83V2PDF_JBHl8u557xyVzi59PHZqUQYryKEywnGeJ/exec";</script>
 <script>
 const PERIOD = { from: "2026-11-01", to: "2026-12-31" };
 const DEFAULT_ROLE = "תותחן";
@@ -502,7 +516,51 @@ const TOTAL_NEED = 21; // 3 מ"כ + 18 חיילים; the specialists are part of
 const MONTHS = [{ y: 2026, m: 10, name: "נובמבר 2026" }, { y: 2026, m: 11, name: "דצמבר 2026" }];
 const WEEKDAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
 const DAY_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
-const calState = { month: 0, openDay: null };
+const calState = { month: 0, openDay: null, filters: {} };
+const FUNNEL = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1.5h10L7.2 6v4L4.8 11V6z" fill="currentColor"/></svg>';
+
+// Excel-style column filter: checkbox list of the column's values, with search and select-all
+function openFilter(btn, tkey, col, list, day) {
+  document.querySelector(".fpop")?.remove();
+  const current = (calState.filters[tkey] || {})[col.key];
+  const values = [...new Set(list.flatMap(col.vals))].sort((a, b) => a.localeCompare(b, "he"));
+  const checked = new Set(current ? [...current] : values);
+  const label = v => v === "" ? "(ריק)" : v;
+  const items = values.map(v => {
+    const cb = h("input", { type: "checkbox", checked: checked.has(v), onchange: e => { e.target.checked ? checked.add(v) : checked.delete(v); syncAll() } });
+    return { v, row: h("label", { class: "fitem" }, cb, h("span", {}, label(v))), cb };
+  });
+  const all = h("input", { type: "checkbox", onchange: e => { items.filter(i => !i.row.hidden).forEach(i => { i.cb.checked = e.target.checked; e.target.checked ? checked.add(i.v) : checked.delete(i.v) }) } });
+  const syncAll = () => { const vis = items.filter(i => !i.row.hidden); all.checked = vis.every(i => i.cb.checked); all.indeterminate = !all.checked && vis.some(i => i.cb.checked) };
+  const search = h("input", { type: "search", class: "cell boxed", placeholder: "חיפוש", "aria-label": "חיפוש ערך",
+    oninput: e => { const q = e.target.value.trim(); items.forEach(i => { i.row.hidden = q && !label(i.v).includes(q) }); syncAll() } });
+  const close = () => { pop.remove(); document.removeEventListener("pointerdown", outside, true); btn.focus() };
+  const apply = () => {
+    const f = calState.filters[tkey] = calState.filters[tkey] || {};
+    if (checked.size === values.length) delete f[col.key]; else f[col.key] = new Set(checked);
+    if (!Object.keys(f).length) delete calState.filters[tkey];
+    pop.remove(); document.removeEventListener("pointerdown", outside, true); openDay(day, true);
+  };
+  const pop = h("div", { class: "fpop", role: "dialog", "aria-label": `סינון לפי ${col.label}`,
+      onkeydown: e => { if (e.key === "Escape") { e.stopPropagation(); close() } if (e.key === "Enter" && e.target.type !== "checkbox") { e.preventDefault(); apply() } } },
+    h("div", { class: "fpop-t" }, `סינון: ${col.label}`),
+    search,
+    h("label", { class: "fitem fall" }, all, h("span", {}, "(בחירת הכל)")),
+    h("div", { class: "flist" }, items.map(i => i.row)),
+    h("div", { class: "fpop-b" },
+      h("button", { class: "btn solid small", onclick: apply }, "אישור"),
+      h("button", { class: "btn small", onclick: close }, "ביטול"),
+      current ? h("button", { class: "btn small", onclick: () => { checked.clear(); values.forEach(v => checked.add(v)); apply() } }, "ניקוי") : null));
+  syncAll();
+  document.getElementById("day-overlay").append(pop);
+  const r = btn.getBoundingClientRect(), w = Math.min(260, innerWidth - 16);
+  pop.style.width = w + "px";
+  pop.style.left = Math.max(8, Math.min(r.right - w, innerWidth - w - 8)) + "px";
+  pop.style.top = Math.min(r.bottom + 4, innerHeight - pop.offsetHeight - 8) + "px";
+  const outside = e => { if (!pop.contains(e.target)) close() };
+  setTimeout(() => document.addEventListener("pointerdown", outside, true), 0);
+  search.focus();
+}
 try { const m = +localStorage.getItem("p2month"); if (m === 0 || m === 1) calState.month = m } catch (e) {}
 
 const plain = s => String(s || "").replace(/["'״׳`]/g, "").replace(/\s+/g, " ").trim();
@@ -562,7 +620,7 @@ function renderCalendar() {
     const miss = !st.ok ? (st.short.length ? "חסר: " + st.short.map(s => s.label).join(", ") : st.present < TOTAL_NEED ? `חסרים ${TOTAL_NEED - st.present} אנשים` : "אין שיבוץ בלי כפילות") : null;
     cells.push(h("button", { class: "day " + (st.ok ? "good" : "bad"), id: `day-${st.day}`, "aria-label": `${i + 1} ב${M.name.split(" ")[0]}: ${st.ok ? "יש מספיק אנשים" : "אין מספיק אנשים"}, ${st.absent.length} נעדרים`,
         onclick: () => openDay(st.day) },
-      h("span", { class: "dh" }, h("span", {}, i + 1), h("span", { class: "st" }, st.ok ? "תקין" : "חסר")),
+      h("span", { class: "dh" }, h("span", {}, i + 1), h("span", { class: "st" }, st.ok ? "תקין" : "לא תקין")),
       h("span", { class: "db" }, h("span", {}, `נוכחים ${st.present}`), st.absent.length ? h("span", {}, `נעדרים ${st.absent.length}`) : null, miss ? h("span", { class: "miss" }, miss) : null)));
   });
   const arrow = d => `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -575,11 +633,11 @@ function renderCalendar() {
         h("button", { class: "navbtn", "aria-label": "החודש הבא", disabled: calState.month === MONTHS.length - 1, onclick: () => go(1), html: arrow("M10 3L5 8l5 5") })),
       h("div", { class: "cal-sum" }, bad ? h("span", {}, h("b", {}, bad), ` ימים חסרים מתוך ${daysIn}`) : `כל ${daysIn} הימים תקינים`)),
     h("div", { class: "legend" },
-      h("span", {}, h("span", { class: "sw", style: "background:var(--ok-soft);border:1px solid var(--ok)" }), "יש מספיק אנשים"),
-      h("span", {}, h("span", { class: "sw", style: "background:var(--warn-soft);border:1px solid var(--warn)" }), "אין מספיק אנשים"),
+      h("span", {}, h("span", { class: "sw", style: "background:var(--ok-soft);border:1px solid var(--ok)" }), "תקין: יש מספיק אנשים"),
+      h("span", {}, h("span", { class: "sw", style: "background:var(--warn-soft);border:1px solid var(--warn)" }), "לא תקין: אין מספיק אנשים"),
       h("span", {}, "לחצו על יום כדי לראות מי נעדר")),
     h("div", { class: "grid7" }, ...WEEKDAYS.map(w => h("div", { class: "wd" }, w)), ...cells),
-    h("details", { class: "rules" }, h("summary", {}, "איך נקבע אם יש מספיק אנשים"),
+    h("details", { class: "rules" }, h("summary", {}, "איך נקבע אם תקין"),
       h("ul", {},
         h("li", {}, `בכל יום צריך לפחות ${TOTAL_NEED} אנשים: 3 מ"כ ועוד 18 חיילים. מפקדים נוספים נספרים כחיילים.`),
         h("li", {}, "מתוך החיילים צריך לפחות 3 עם נט\"ר תומ\"ת, אחד עם נט\"ר אלפ\"א ו-3 כוונים."),
@@ -598,36 +656,51 @@ function openDay(day, refresh) {
     { k: "נוכחים", have: st.present, need: TOTAL_NEED },
     ...SLOTS.map(sl => ({ k: sl.label, have: st.counts[sl.key], need: sl.need })),
   ];
-  const personCells = s => [
-    h("td", { style: "font-weight:500" }, s.name), h("td", {}, roleOf(s)), h("td", { style: "font-family:var(--f-mono);direction:ltr;text-align:right" }, s.ma || ""),
-    h("td", {}, h("div", { class: "quals", style: "cursor:default" }, (s.quals || []).length ? s.quals.map(q => h("span", { class: "chip" }, q)) : h("span", { class: "empty" }, "אין הכשרות"))),
-    h("td", {}, teamName(s))];
-  const COLS = ["שם החייל", "תפקיד", "מ.א", "הכשרות", "צוות"];
-  const table = (extraCol, rows) => h("div", { class: "ledger" }, h("table", { class: "daytable" },
-    h("colgroup", {}, ...["name", "role", "ma", "quals", "team", ...(extraCol ? ["req"] : [])].map(c => h("col", { class: "d-" + c }))),
-    h("thead", {}, h("tr", {}, ...[...COLS, ...(extraCol ? [extraCol] : [])].map(x => h("th", {}, x)))),
-    h("tbody", {}, rows)));
-  const absentRows = st.absent.sort((a, b) => TEAMS.findIndex(t => t.key === a.team) - TEAMS.findIndex(t => t.key === b.team) || (a.order ?? 0) - (b.order ?? 0)).map(s => {
-    const r = absenceOn(s, day);
-    return h("tr", {}, ...personCells(s),
-      h("td", {}, h("div", { style: "font-family:var(--f-mono);font-size:.8rem;white-space:nowrap" }, `${fmt(r.from)} – ${fmt(r.to)}`), r.reason ? h("div", { style: "color:var(--muted);font-size:.85rem" }, r.reason) : null));
-  });
+  if (!refresh) calState.filters = {};
+  const COLS = [
+    { key: "name", label: "שם החייל", vals: s => [s.name || ""], td: s => h("td", { style: "font-weight:500" }, s.name) },
+    { key: "role", label: "תפקיד", vals: s => [roleOf(s)], td: s => h("td", {}, roleOf(s)) },
+    { key: "ma", label: "מ.א", vals: s => [s.ma || ""], td: s => h("td", { style: "font-family:var(--f-mono);direction:ltr;text-align:right" }, s.ma || "") },
+    { key: "quals", label: "הכשרות", vals: s => (s.quals || []).length ? s.quals : [""],
+      td: s => h("td", {}, h("div", { class: "quals", style: "cursor:default" }, (s.quals || []).length ? s.quals.map(q => h("span", { class: "chip" }, q)) : h("span", { class: "empty" }, "אין הכשרות"))) },
+    { key: "team", label: "צוות", vals: s => [teamName(s)], td: s => h("td", {}, teamName(s)) },
+  ];
+  const REQ_COL = { key: "req", label: "בקשה", vals: s => [absenceOn(s, day)?.reason || ""],
+    td: s => { const r = absenceOn(s, day); return h("td", {}, h("div", { style: "font-family:var(--f-mono);font-size:.8rem;white-space:nowrap" }, `${fmt(r.from)} – ${fmt(r.to)}`), r.reason ? h("div", { style: "color:var(--muted);font-size:.85rem" }, r.reason) : null) } };
+  // an Excel-style filterable table; returns the element plus shown/total counts
+  const table = (tkey, cols, list) => {
+    const filt = calState.filters[tkey] || {};
+    const shown = list.filter(s => cols.every(c => !filt[c.key] || c.vals(s).some(v => filt[c.key].has(v))));
+    const el = h("div", { class: "ledger" }, h("table", { class: "daytable" },
+      h("colgroup", {}, ...cols.map(c => h("col", { class: "d-" + c.key }))),
+      h("thead", {}, h("tr", {}, ...cols.map(c => h("th", {}, h("span", { class: "thf" }, c.label,
+        h("button", { class: "fbtn" + (filt[c.key] ? " on" : ""), title: filt[c.key] ? "מסונן. לחצו לשינוי הסינון" : "סינון", "aria-label": `סינון לפי ${c.label}`,
+          onclick: e => openFilter(e.currentTarget, tkey, c, list, day), html: FUNNEL })))))),
+      h("tbody", {}, shown.length ? shown.map(s => h("tr", {}, ...cols.map(c => c.td(s))))
+        : h("tr", {}, h("td", { colspan: cols.length, style: "color:var(--muted)" }, "אין שורות שמתאימות לסינון.")))));
+    return { el, shown: shown.length, total: list.length, filtered: Object.keys(filt).length > 0 };
+  };
+  const countNote = t => t.filtered ? h("span", { class: "fnote" }, `מוצגים ${t.shown} מתוך ${t.total}`,
+    h("button", { class: "btn small", onclick: e => { delete calState.filters[e.currentTarget.dataset.k]; openDay(day, true) }, "data-k": t.key }, "ניקוי סינון")) : null;
+  const absentList = st.absent.sort((a, b) => TEAMS.findIndex(t => t.key === a.team) - TEAMS.findIndex(t => t.key === b.team) || (a.order ?? 0) - (b.order ?? 0));
+  const absentT = absentList.length ? { key: "absent", ...table("absent", [...COLS, REQ_COL], absentList) } : null;
   const groupSections = ROLE_GROUPS.map(g => {
-    const people = st.crew.filter(p => p.caps[g.key]);
+    const people = st.crew.filter(p => p.caps[g.key]).map(p => p.s);
+    const t = people.length ? { key: g.key, ...table(g.key, COLS, people) } : null;
     return h("section", { class: "dsec" },
-      h("h3", { class: people.length >= g.need ? "good" : "bad" }, g.label),
-      people.length ? table(null, people.map(p => h("tr", {}, ...personCells(p.s)))) : h("div", { class: "gempty" }, "אין אף אחד ביום הזה"));
+      h("div", { class: "dsec-h" }, h("h3", { class: people.length >= g.need ? "good" : "bad" }, g.label), t ? countNote(t) : null),
+      t ? t.el : h("div", { class: "gempty" }, "אין אף אחד ביום הזה"));
   });
   const close = () => { calState.openDay = null; ov.hidden = true; document.getElementById(`day-${day}`)?.focus() };
   dlg.replaceChildren(...[
     h("div", { class: "dlg-head" },
-      h("h2", { id: "day-title" }, `יום ${DAY_NAMES[dt.getDay()]}, ${fmt(day)}`, h("span", { class: "pill " + (st.ok ? "good" : "bad") }, st.ok ? "יש מספיק אנשים" : "אין מספיק אנשים")),
+      h("h2", { id: "day-title" }, `יום ${DAY_NAMES[dt.getDay()]}, ${fmt(day)}`, h("span", { class: "pill " + (st.ok ? "good" : "bad") }, st.ok ? "תקין" : "לא תקין")),
       h("button", { class: "btn", onclick: close, "aria-label": "סגירה" }, "סגירה")),
     h("div", { class: "checks" }, ...checks.map(c => h("div", { class: "check " + (c.have >= c.need ? "good" : "bad") }, h("span", { class: "k" }, c.k), h("span", { class: "v" }, c.have), h("span", { class: "need" }, `נדרשים ${c.need}`)))),
     st.overlap ? h("div", { class: "note-bad" }, "יש מספיק אנשים בכל קטגוריה, אבל אותם אנשים נספרים בכמה תפקידים, ואי אפשר לשבץ את כולם בלי כפילות.") : null,
     h("section", { class: "dsec" },
-      h("h3", {}, st.absent.length ? `נעדרים (${st.absent.length})` : "אין נעדרים ביום הזה"),
-      st.absent.length ? table("בקשה", absentRows) : null),
+      h("div", { class: "dsec-h" }, h("h3", {}, absentT ? `נעדרים (${absentT.total})` : "אין נעדרים ביום הזה"), absentT ? countNote(absentT) : null),
+      absentT ? absentT.el : null),
     h("h2", { style: "font-size:1.05rem;margin-top:6px" }, "מי נמצא היום"),
     ...groupSections].filter(Boolean));
   ov.hidden = false;
