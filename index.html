@@ -1,0 +1,417 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>
+<title>כוח אדם · פלגה 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Secular+One&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column of stacked roster ledgers under a tab bar; each soldier row unfolds into a requests sub-ledger. */
+:root {
+  --bg: #f1f2ec; --surface: #fbfbf8; --fg: #1d2119; --muted: #646b5c; --line: #d8dbcd;
+  --accent: #4b5a26; --accent-soft: #e3e8d3; --warn: #a94b18; --warn-soft: #f6e3d6; --ok: #3d6b3a;
+  --f-display: "Secular One", "Heebo", system-ui, sans-serif;
+  --f-body: "Heebo", system-ui, "Segoe UI", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #14160f; --surface: #1c1f15; --fg: #e6e8dd; --muted: #9ca28e; --line: #343a2a;
+  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #14160f; --surface: #1c1f15; --fg: #e6e8dd; --muted: #9ca28e; --line: #343a2a;
+  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.5 }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 60px; display: grid; gap: 22px }
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; text-wrap: balance }
+h1 { font-size: 1.75rem; line-height: 1.2 }
+h2 { font-size: 1.2rem }
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px }
+.period { color: var(--muted); font-size: .95rem }
+.period b { font-family: var(--f-mono); font-weight: 500; color: var(--fg) }
+.status { font-size: .82rem; color: var(--muted); min-height: 1.2em }
+.status.err { color: var(--warn) }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line) }
+.tab { font: inherit; font-weight: 500; background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 14px; color: var(--muted); cursor: pointer; margin-bottom: -1px }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent) }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.stats { display: flex; flex-wrap: wrap; gap: 10px 28px; padding-block: 2px }
+.stat { display: grid; gap: 0 }
+.stat .n { font-family: var(--f-mono); font-size: 1.35rem; font-variant-numeric: tabular-nums }
+.stat .l { font-size: .78rem; color: var(--muted); letter-spacing: .02em }
+
+section.team { display: grid; gap: 8px }
+.team-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px }
+.team-head .meta { color: var(--muted); font-size: .85rem }
+.team.command .ledger { border-color: var(--accent) }
+.ledger { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto }
+table { width: 100%; border-collapse: collapse; min-width: 720px }
+th { text-align: start; font-weight: 500; font-size: .78rem; color: var(--muted); letter-spacing: .03em; padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap }
+td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: middle }
+tr.soldier:last-of-type td, tr.detail:last-child td { border-bottom: 0 }
+tr.soldier.open > td { background: var(--accent-soft) }
+col.c-tog { width: 40px } col.c-name { width: 22% } col.c-role { width: 17% } col.c-ma { width: 110px } col.c-req { width: 92px }
+
+.tog { width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--fg); cursor: pointer; display: grid; place-items: center; padding: 0 }
+.tog svg { transition: transform .15s }
+tr.open .tog svg { transform: rotate(-90deg) }
+.tog:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+
+input.cell, textarea.cell { font: inherit; color: inherit; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 4px 6px; width: 100% }
+input.cell:hover:not(:disabled), textarea.cell:hover:not(:disabled) { border-color: var(--line) }
+input.cell:focus, textarea.cell:focus { outline: none; border-color: var(--accent); background: var(--surface) }
+input.cell.name { font-weight: 500 }
+input.cell.ma { font-family: var(--f-mono); font-variant-numeric: tabular-nums; direction: ltr; text-align: right }
+input.cell::placeholder, textarea.cell::placeholder { color: var(--muted); opacity: .7 }
+.note { display: inline-block; font-size: .72rem; padding: 0 6px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); margin-inline-start: 6px; vertical-align: middle }
+
+.quals { display: flex; flex-wrap: wrap; gap: 4px; min-height: 30px; align-items: center; cursor: text; border: 1px solid transparent; border-radius: 4px; padding: 3px 4px }
+.quals:hover { border-color: var(--line) }
+.chip { font-size: .78rem; padding: 1px 7px; border-radius: 3px; border: 1px solid var(--line); white-space: nowrap }
+.quals .empty { color: var(--muted); font-size: .82rem; opacity: .7 }
+
+.reqcount { font-family: var(--f-mono); font-size: .8rem; padding: 1px 8px; border-radius: 10px; white-space: nowrap }
+.reqcount.has { background: var(--warn-soft); color: var(--warn) }
+.reqcount.none { color: var(--muted) }
+
+tr.detail > td { background: var(--accent-soft); padding: 4px 12px 14px 12px }
+.panel { display: grid; gap: 10px; padding-inline-start: 40px }
+.panel table { min-width: 560px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px }
+.panel th { padding: 6px 8px }
+.panel td { padding: 4px 6px; vertical-align: top }
+.range { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px }
+.range input { width: 9.6em; font-variant-numeric: tabular-nums }
+.range .days { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); white-space: nowrap }
+.range .bad { color: var(--warn); font-size: .78rem; flex-basis: 100% }
+textarea.cell { resize: vertical; min-height: 34px; line-height: 1.4 }
+.panel .empty-req { color: var(--muted); font-size: .88rem; padding: 10px 8px }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px }
+.btn { font: inherit; font-size: .88rem; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 4px; padding: 4px 12px; cursor: pointer }
+.btn:hover { border-color: var(--accent) }
+.btn.primary { border-color: var(--accent); color: var(--accent); font-weight: 500 }
+.btn.danger { color: var(--warn) }
+.btn.danger:hover { border-color: var(--warn) }
+.btn.icon { padding: 2px 8px }
+.actions select { font: inherit; font-size: .88rem; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px }
+.actions .lbl { font-size: .85rem; color: var(--muted) }
+.confirm { display: inline-flex; gap: 6px; align-items: center; font-size: .85rem; color: var(--warn) }
+.addrow { padding: 8px }
+.ro .btn, .ro .tog-only { }
+.ro input.cell, .ro textarea.cell { pointer-events: none }
+
+.placeholder, .loading { background: var(--surface); border: 1px dashed var(--line); border-radius: 6px; padding: 36px 20px; text-align: center; color: var(--muted) }
+@media (max-width: 640px) { .panel { padding-inline-start: 0 } h1 { font-size: 1.4rem } }
+@media (prefers-reduced-motion: reduce) { .tog svg { transition: none } }
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header class="top">
+    <div>
+      <h1>כוח אדם · פלגה 2</h1>
+      <div class="period">קו מילואים <b>01.11.2026</b> – <b>31.12.2026</b></div>
+    </div>
+    <div style="display:grid;gap:6px;justify-items:end">
+      <div class="actions" id="localbar" hidden>
+        <span class="lbl">שמור במחשב הזה בלבד</span>
+        <button class="btn" id="btn-export">ייצוא גיבוי</button>
+        <label class="btn" for="file-import" style="display:inline-block">ייבוא גיבוי</label>
+        <input type="file" id="file-import" accept=".json,application/json" hidden>
+        <span id="reset-slot"></span>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-roster" aria-selected="true" data-tab="roster">כוח אדם</button>
+    <button class="tab" role="tab" id="tab-two" aria-selected="false" data-tab="two">לשונית 2</button>
+  </nav>
+
+  <main id="view-roster" role="tabpanel" aria-labelledby="tab-roster">
+    <div class="loading" id="loading">טוען את רשימת הפלגה…</div>
+    <div id="roster" style="display:grid;gap:26px"></div>
+  </main>
+  <main id="view-two" role="tabpanel" aria-labelledby="tab-two" hidden>
+    <div class="placeholder">הלשונית השנייה תיבנה בשלב הבא.</div>
+  </main>
+</div>
+
+<script>window.P2_ENC = {"salt": "hEPdo39QJmPbSHArHP3dkw==", "iv": "BhEECqnCc7LgrgOs", "iter": 600000, "ct": "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"};</script>
+<script>
+const PERIOD = { from: "2026-11-01", to: "2026-12-31" };
+const TEAMS = [
+  { key: "command", title: "פיקוד הפלגה", meta: "מפל\"ג וסמל" },
+  { key: "2א", title: "צוות 2א" },
+  { key: "2ב", title: "צוות 2ב" },
+  { key: "2ג", title: "צוות 2ג" },
+];
+const state = { soldiers: new Map(), open: new Set(), editingQuals: null, confirm: null, canWrite: true, ready: false };
+let db = null, col = null, pendingRender = false;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  document.getElementById("view-roster").hidden = t.dataset.tab !== "roster";
+  document.getElementById("view-two").hidden = t.dataset.tab !== "two";
+  try { localStorage.setItem("p2tab", t.dataset.tab) } catch (e) {}
+}));
+try { const t = localStorage.getItem("p2tab"); if (t) document.querySelector(`.tab[data-tab="${t}"]`)?.click() } catch (e) {}
+
+/* ---------- helpers ---------- */
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else if (k === "html") el.innerHTML = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid.nodeType ? kid : String(kid));
+  return el;
+}
+const fmt = iso => iso ? iso.split("-").reverse().join(".") : "";
+const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5) + 1;
+const uid = () => Math.random().toString(36).slice(2, 10);
+function setStatus(text, err) { const s = document.getElementById("status"); s.textContent = text; s.classList.toggle("err", !!err) }
+
+/* ---------- persistence: one write at a time per soldier ---------- */
+const queues = new Map();
+function save(id) {
+  const s = state.soldiers.get(id); if (!s || !col) return;
+  const body = JSON.parse(JSON.stringify(s)); delete body.id;
+  const prev = queues.get(id) || Promise.resolve();
+  setStatus("שומר…");
+  const p = prev.then(() => col.doc(id).set(body)).then(() => {
+    if (queues.get(id) === p) setStatus("נשמר");
+  }).catch(e => {
+    if (e && e.code === "invalid_argument") { state.canWrite = false; render() }
+    setStatus(e && e.code === "quota_exceeded" ? "אין מקום לשמור נתונים נוספים." : "השמירה נכשלה. רעננו את הדף ונסו שוב.", true);
+  });
+  queues.set(id, p);
+}
+function removeDoc(id) {
+  state.soldiers.delete(id); state.open.delete(id); render();
+  if (col) col.doc(id).delete().then(() => setStatus("החייל הוסר")).catch(() => setStatus("ההסרה נכשלה.", true));
+}
+
+/* ---------- render ---------- */
+function sortedTeam(key) {
+  return [...state.soldiers.values()].filter(s => s.team === key).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name, "he"));
+}
+function busy() { const a = document.activeElement; return a && a.closest && a.closest("#roster") && (a.matches("input,textarea,select")) }
+function requestRender() { if (busy()) pendingRender = true; else render() }
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender && !busy()) { pendingRender = false; render() } }, 0));
+
+function render() {
+  const root = document.getElementById("roster");
+  document.getElementById("loading").hidden = state.ready;
+  if (!state.ready) { root.replaceChildren(); return }
+  root.classList.toggle("ro", !state.canWrite);
+  const all = [...state.soldiers.values()];
+  const reqs = all.flatMap(s => s.requests || []);
+  const stats = h("div", { class: "stats" },
+    stat(all.length, "סה\"כ בפלגה"),
+    ...TEAMS.slice(1).map(t => stat(all.filter(s => s.team === t.key).length, t.title)),
+    stat(all.filter(s => (s.requests || []).length).length, "חיילים עם בקשות"),
+    stat(reqs.length, "בקשות היעדרות"),
+  );
+  root.replaceChildren(stats, ...TEAMS.map(teamSection));
+}
+function stat(n, l) { return h("div", { class: "stat" }, h("span", { class: "n" }, n), h("span", { class: "l" }, l)) }
+
+function teamSection(t) {
+  const list = sortedTeam(t.key);
+  const withReq = list.filter(s => (s.requests || []).length).length;
+  const tbody = h("tbody");
+  for (const s of list) { tbody.append(soldierRow(s)); if (state.open.has(s.id)) tbody.append(detailRow(s)) }
+  if (!list.length) tbody.append(h("tr", {}, h("td", { colspan: 6, class: "addrow", style: "color:var(--muted)" }, "אין חיילים בטבלה הזו.")));
+  return h("section", { class: "team" + (t.key === "command" ? " command" : ""), "aria-label": t.title },
+    h("div", { class: "team-head" }, h("h2", {}, t.title),
+      h("span", { class: "meta" }, t.meta ? t.meta : `${list.length} חיילים`, withReq ? ` · ${withReq} עם בקשות` : "")),
+    h("div", { class: "ledger" },
+      h("table", {},
+        h("colgroup", {}, ...["tog", "name", "role", "ma", "quals", "req"].map(c => h("col", { class: "c-" + c }))),
+        h("thead", {}, h("tr", {}, h("th", {}, h("span", { style: "position:absolute;clip:rect(0 0 0 0)" }, "פתיחה")), h("th", {}, "שם החייל"), h("th", {}, "תפקיד"), h("th", {}, "מ.א"), h("th", {}, "הכשרות"), h("th", {}, "בקשות"))),
+        tbody,
+      ),
+      state.canWrite && t.key !== "command" ? h("div", { class: "addrow" }, h("button", { class: "btn", onclick: () => addSoldier(t.key) }, "+ הוספת חייל")) : null,
+    ),
+  );
+}
+
+function field(s, key, cls, placeholder) {
+  return h("input", { class: "cell " + cls, id: `f-${s.id}-${key}`, value: s[key] || "", placeholder, disabled: !state.canWrite, "aria-label": placeholder,
+    onchange: e => { s[key] = e.target.value.trim(); save(s.id) },
+    onkeydown: e => { if (e.key === "Enter") e.target.blur() } });
+}
+
+function soldierRow(s) {
+  const open = state.open.has(s.id);
+  const n = (s.requests || []).length;
+  const qualsCell = state.editingQuals === s.id
+    ? h("input", { class: "cell", id: `f-${s.id}-quals`, value: (s.quals || []).join(", "), placeholder: "הכשרות, מופרדות בפסיק", "aria-label": "הכשרות",
+        onblur: e => { s.quals = e.target.value.split(",").map(x => x.trim()).filter(Boolean); state.editingQuals = null; save(s.id); setTimeout(render, 0) },
+        onkeydown: e => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") { state.editingQuals = null; render() } } })
+    : h("div", { class: "quals", tabindex: state.canWrite ? 0 : null, title: state.canWrite ? "לחצו לעריכה" : null,
+        onclick: () => { if (!state.canWrite) return; state.editingQuals = s.id; render(); const i = document.getElementById(`f-${s.id}-quals`); i && i.focus() },
+        onkeydown: e => { if (e.key === "Enter") e.currentTarget.click() } },
+        (s.quals || []).length ? s.quals.map(q => h("span", { class: "chip" }, q)) : h("span", { class: "empty" }, "אין הכשרות"));
+  return h("tr", { class: "soldier" + (open ? " open" : "") },
+    h("td", {}, h("button", { class: "tog", "aria-expanded": open, "aria-label": `בקשות של ${s.name || "חייל"}`, onclick: () => { open ? state.open.delete(s.id) : state.open.add(s.id); state.confirm = null; render() } },
+      h("span", { html: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 4 7l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' }))),
+    h("td", {}, h("div", { style: "display:flex;align-items:center" }, field(s, "name", "name", "שם החייל"), s.note ? h("span", { class: "note" }, s.note) : null)),
+    h("td", {}, field(s, "role", "", "תפקיד")),
+    h("td", {}, field(s, "ma", "ma", "מ.א")),
+    h("td", {}, qualsCell),
+    h("td", {}, h("span", { class: "reqcount " + (n ? "has" : "none") }, n ? `${n} ${n === 1 ? "בקשה" : "בקשות"}` : "—")),
+  );
+}
+
+function detailRow(s) {
+  const reqs = s.requests || [];
+  const body = reqs.map(r => {
+    const bad = r.from && r.to && r.to < r.from ? "תאריך הסיום לפני תאריך ההתחלה"
+      : (r.from && r.from < PERIOD.from) || (r.to && r.to > PERIOD.to) ? "מחוץ לתקופת הקו" : null;
+    const dateInput = (k, lbl) => h("input", { type: "date", class: "cell", id: `r-${s.id}-${r.id}-${k}`, value: r[k] || "", min: PERIOD.from, max: PERIOD.to, disabled: !state.canWrite, "aria-label": lbl,
+      onchange: e => { r[k] = e.target.value; if (k === "from" && !r.to) r.to = r.from; save(s.id); requestRender() } });
+    return h("tr", {},
+      h("td", {}, h("div", { class: "range" }, dateInput("from", "מתאריך"), "–", dateInput("to", "עד תאריך"),
+        r.from && r.to && !bad ? h("span", { class: "days" }, `${daysBetween(r.from, r.to)} ימים`) : null,
+        bad ? h("span", { class: "bad" }, bad) : null)),
+      h("td", {}, h("textarea", { class: "cell", id: `r-${s.id}-${r.id}-reason`, rows: 1, placeholder: "למה החייל מבקש לא להיות", disabled: !state.canWrite, "aria-label": "סיבה",
+        onchange: e => { r.reason = e.target.value.trim(); save(s.id) } }, r.reason || "")),
+      h("td", { style: "width:44px" }, state.canWrite ? h("button", { class: "btn icon danger", "aria-label": "מחיקת הבקשה", title: "מחיקת הבקשה",
+        onclick: () => { s.requests = reqs.filter(x => x !== r); save(s.id); render() } }, "✕") : null),
+    );
+  });
+  const reqTable = h("table", {},
+    h("thead", {}, h("tr", {}, h("th", { style: "width:46%" }, "בקשה (טווח תאריכים)"), h("th", {}, "סיבה"), h("th", {}))),
+    h("tbody", {}, body.length ? body : h("tr", {}, h("td", { colspan: 3, class: "empty-req" }, "אין בקשות היעדרות. החייל זמין לכל הקו."))));
+
+  const teamOpts = TEAMS.map(t => h("option", { value: t.key, selected: s.team === t.key }, t.title));
+  const actions = state.canWrite ? h("div", { class: "actions" },
+    h("button", { class: "btn primary", onclick: () => { s.requests = [...reqs, { id: uid(), from: "", to: "", reason: "" }]; save(s.id); render();
+      const last = s.requests[s.requests.length - 1]; document.getElementById(`r-${s.id}-${last.id}-from`)?.focus() } }, "+ הוספת בקשה"),
+    h("span", { class: "lbl" }, "צוות:"),
+    h("select", { id: `team-${s.id}`, "aria-label": "העברה לצוות", onchange: e => { s.team = e.target.value; s.order = Date.now(); save(s.id); render() } }, teamOpts),
+    h("span", { class: "lbl" }, "הערה:"),
+    h("input", { class: "cell", id: `f-${s.id}-note`, value: s.note || "", placeholder: "למשל: חדש, מתנדב", style: "width:12em;border-color:var(--line);background:var(--surface)",
+      onchange: e => { s.note = e.target.value.trim(); save(s.id); requestRender() } }),
+    state.confirm === s.id
+      ? h("span", { class: "confirm" }, `להסיר את ${s.name || "החייל"} מהרשימה?`,
+          h("button", { class: "btn danger", onclick: () => { state.confirm = null; removeDoc(s.id) } }, "הסרה"),
+          h("button", { class: "btn", onclick: () => { state.confirm = null; render() } }, "ביטול"))
+      : h("button", { class: "btn danger", onclick: () => { state.confirm = s.id; render() } }, "הסרת חייל"),
+  ) : null;
+  return h("tr", { class: "detail" }, h("td", { colspan: 6 }, h("div", { class: "panel" }, h("div", { style: "overflow-x:auto" }, reqTable), actions)));
+}
+
+function addSoldier(team) {
+  if (!col) return;
+  const ref = col.doc();
+  const order = Math.max(-1, ...sortedTeam(team).map(s => s.order ?? 0)) + 1;
+  const s = { id: ref.id, team, order, name: "", role: "", ma: "", quals: [], note: "", requests: [] };
+  state.soldiers.set(ref.id, s); state.open.add(ref.id); save(ref.id); render();
+  document.getElementById(`f-${ref.id}-name`)?.focus();
+}
+
+/* ---------- offline mode: same interface as the shared store, kept in this browser ---------- */
+const LS_KEY = "platoon2-soldiers-v1";
+function localCollection(seed) {
+  let data = null, listeners = [];
+  try { data = JSON.parse(localStorage.getItem(LS_KEY) || "null") } catch (e) {}
+  if (!data) data = JSON.parse(JSON.stringify(seed || {}));
+  const persist = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(data)) } catch (e) { setStatus("הדפדפן חוסם שמירה. ייצאו גיבוי כדי לא לאבד שינויים.", true) } };
+  const snap = () => { const docs = Object.keys(data).sort().map(id => ({ id, data: () => data[id], metadata: { hasPendingWrites: false } })); return { docs, size: docs.length } };
+  const emit = () => listeners.forEach(fn => fn(snap()));
+  persist();
+  return {
+    doc(id) { id = id || "n" + Date.now().toString(36) + uid(); return { id,
+      set: async body => { data[id] = JSON.parse(JSON.stringify(body)); persist(); emit() },
+      delete: async () => { delete data[id]; persist(); emit() } } },
+    onSnapshot(fn) { listeners.push(fn); setTimeout(() => fn(snap()), 0); return () => {} },
+    replaceAll(next) { data = next; persist(); emit() },
+    all: () => data,
+  };
+}
+function hasLocal() { try { return !!localStorage.getItem(LS_KEY) } catch (e) { return false } }
+async function decryptRoster(pass) {
+  const enc = window.P2_ENC, b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b(enc.salt), iterations: enc.iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b(enc.iv) }, key, b(enc.ct))));
+}
+function openLocal() {
+  if (window.P2_SEED || hasLocal()) return startLocal(window.P2_SEED || null);
+  const box = document.getElementById("loading");
+  if (!window.P2_ENC) { box.textContent = "פתחו את הדשבורד מהקישור ב-claude.ai, או מהקובץ platoon2_dashboard_standalone.html."; return }
+  const err = h("div", { class: "bad", style: "color:var(--warn);min-height:1.4em" });
+  const pass = h("input", { type: "password", id: "unlock-pass", class: "cell", autocomplete: "current-password", style: "max-width:16em;border-color:var(--line);background:var(--bg)", "aria-label": "סיסמה" });
+  const form = h("form", { style: "display:grid;gap:10px;justify-items:center", onsubmit: async e => {
+      e.preventDefault(); err.textContent = "פותח…";
+      try { startLocal(await decryptRoster(pass.value)) } catch (_) { err.textContent = "הסיסמה שגויה." }
+    } },
+    h("div", { style: "color:var(--fg);font-weight:500" }, "הנתונים מוצפנים. הקלידו את הסיסמה כדי לפתוח."),
+    h("div", { style: "display:flex;gap:8px;flex-wrap:wrap;justify-content:center" }, pass, h("button", { class: "btn primary", type: "submit" }, "פתיחה")),
+    err,
+    h("div", { style: "font-size:.82rem" }, "אחרי הפתיחה הנתונים נשמרים בדפדפן הזה, ולא תצטרכו להקליד שוב."));
+  box.replaceChildren(form); pass.focus();
+}
+function startLocal(seed) {
+  col = localCollection(seed);
+  document.getElementById("localbar").hidden = false;
+  document.getElementById("btn-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(col.all(), null, 1)], { type: "application/json" });
+    const a = h("a", { href: URL.createObjectURL(blob), download: `platoon2-backup-${new Date().toISOString().slice(0, 10)}.json` });
+    document.body.append(a); a.click(); a.remove(); setStatus("קובץ הגיבוי ירד למחשב");
+  });
+  document.getElementById("file-import").addEventListener("change", async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { const d = JSON.parse(await f.text()); if (typeof d !== "object" || Array.isArray(d)) throw 0;
+      state.open.clear(); col.replaceAll(d); setStatus("הגיבוי נטען") } catch (_) { setStatus("הקובץ לא נראה כמו גיבוי של הדשבורד.", true) }
+    e.target.value = "";
+  });
+  const slot = document.getElementById("reset-slot");
+  const drawReset = ask => slot.replaceChildren(ask
+    ? h("span", { class: "confirm" }, "למחוק את כל השינויים ולחזור לנתוני המצבה?",
+        h("button", { class: "btn danger", onclick: () => {
+          if (!seed) { try { localStorage.removeItem(LS_KEY) } catch (e) {} location.reload(); return }
+          state.open.clear(); col.replaceAll(JSON.parse(JSON.stringify(seed))); drawReset(false); setStatus("חזרנו לנתוני המצבה") } }, "איפוס"),
+        h("button", { class: "btn", onclick: () => drawReset(false) }, "ביטול"))
+    : h("button", { class: "btn danger", onclick: () => drawReset(true) }, "איפוס לנתוני המצבה"));
+  drawReset(false);
+  subscribe();
+}
+
+/* ---------- boot ---------- */
+(async () => {
+  if (!window.claude || !window.claude.use) return openLocal();
+  const [dbNs, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+  if (!dbNs) {
+    if (window.P2_SEED || window.P2_ENC) return openLocal();
+    document.getElementById("loading").textContent = "אין גישה לנתוני הפלגה בתצוגה הזו. התחברו לחשבון ונסו שוב."; return;
+  }
+  db = dbNs; col = db.collection("soldiers");
+  if (user) { try { const c = await user.can("data.write"); if (c === false) state.canWrite = false } catch (e) {} }
+  subscribe();
+})();
+
+function subscribe() {
+  col.onSnapshot(snap => {
+    const next = new Map();
+    for (const d of snap.docs) {
+      const data = JSON.parse(JSON.stringify(d.data()));
+      const local = state.soldiers.get(d.id);
+      // keep this view's local copy while its own write is still in flight
+      next.set(d.id, queues.has(d.id) && local && d.metadata.hasPendingWrites ? local : { id: d.id, ...data });
+    }
+    state.soldiers = next; state.ready = true;
+    if (!snap.size) { document.getElementById("loading").textContent = "עדיין אין חיילים ברשימה." ; document.getElementById("loading").hidden = false; return }
+    requestRender();
+  }, () => setStatus("החיבור לנתונים נותק. רעננו את הדף.", true));
+}
+</script>
+
+</body></html>
