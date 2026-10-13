@@ -47,12 +47,12 @@ section.team { display: grid; gap: 8px }
 .team-head .meta { color: var(--muted); font-size: .85rem }
 .team.command .ledger { border-color: var(--accent) }
 .ledger { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto }
-table { width: 100%; border-collapse: collapse; min-width: 840px }
+table { width: 100%; border-collapse: collapse; min-width: 1040px }
 th { text-align: start; font-weight: 500; font-size: .78rem; color: var(--muted); letter-spacing: .03em; padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap }
 td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: middle }
 tr.soldier:last-of-type td, tr.detail:last-child td { border-bottom: 0 }
 tr.soldier.open > td { background: var(--accent-soft) }
-col.c-tog { width: 76px } col.c-name { width: 19% } col.c-role { width: 15% } col.c-ma { width: 105px } col.c-phone { width: 165px } col.c-req { width: 92px }
+col.c-tog { width: 76px } col.c-name { width: 15% } col.c-role { width: 12% } col.c-ma { width: 105px } col.c-phone { width: 165px } col.c-req { width: 100px } col.c-quals, col.c-logi { width: auto }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
 
 .rowctl { display: flex; align-items: center; gap: 4px }
@@ -81,6 +81,7 @@ input.cell::placeholder, textarea.cell::placeholder { color: var(--muted); opaci
 .quals { display: flex; flex-wrap: wrap; gap: 4px; min-height: 30px; align-items: center; cursor: text; border: 1px solid transparent; border-radius: 4px; padding: 3px 4px }
 .quals:hover { border-color: var(--line) }
 .chip { font-size: .78rem; padding: 1px 7px; border-radius: 3px; border: 1px solid var(--line); white-space: nowrap }
+.chip.logi { background: var(--accent-soft); border-color: transparent }
 .quals .empty { color: var(--muted); font-size: .82rem; opacity: .7 }
 
 .reqcount { font-family: var(--f-mono); font-size: .8rem; padding: 1px 8px; border-radius: 10px; white-space: nowrap }
@@ -329,14 +330,14 @@ function teamSection(t) {
   const withReq = list.filter(s => (s.requests || []).length).length;
   const tbody = h("tbody", { "data-team": t.key });
   for (const s of list) { tbody.append(soldierRow(s)); if (state.open.has(s.id)) tbody.append(detailRow(s)) }
-  if (!list.length) tbody.append(h("tr", {}, h("td", { colspan: 7, class: "addrow", style: "color:var(--muted)" }, "אין חיילים בטבלה הזו.")));
+  if (!list.length) tbody.append(h("tr", {}, h("td", { colspan: 8, class: "addrow", style: "color:var(--muted)" }, "אין חיילים בטבלה הזו.")));
   return h("section", { class: "team" + (t.key === "command" ? " command" : ""), "aria-label": t.title || "מפל\"ג וסמל" },
     t.title ? h("div", { class: "team-head" }, h("h2", {}, t.title),
       h("span", { class: "meta" }, teamCount(list.length), withReq ? ` · ${withReq} עם בקשות` : "")) : null,
     h("div", { class: "ledger" },
       h("table", {},
-        h("colgroup", {}, ...["tog", "name", "role", "ma", "phone", "quals", "req"].map(c => h("col", { class: "c-" + c }))),
-        h("thead", {}, h("tr", {}, h("th", {}, h("span", { class: "sr" }, "סידור ופתיחה")), h("th", {}, "שם החייל"), h("th", {}, "תפקיד"), h("th", {}, "מ.א"), h("th", {}, "טלפון"), h("th", {}, "הכשרות"), h("th", {}, "בקשות"))),
+        h("colgroup", {}, ...["tog", "name", "role", "ma", "phone", "quals", "logi", "req"].map(c => h("col", { class: "c-" + c }))),
+        h("thead", {}, h("tr", {}, h("th", {}, h("span", { class: "sr" }, "סידור ופתיחה")), h("th", {}, "שם החייל"), h("th", {}, "תפקיד"), h("th", {}, "מ.א"), h("th", {}, "טלפון"), h("th", {}, "הכשרות"), h("th", {}, "בקשות לוגיסטיות"), h("th", {}, "בקשות היעדרות"))),
         tbody,
       ),
       state.canWrite && t.key !== "command" ? h("div", { class: "addrow" }, h("button", { class: "btn", onclick: () => addSoldier(t.key) }, "+ הוספת חייל")) : null,
@@ -353,14 +354,20 @@ function field(s, key, cls, placeholder, fallback) {
 function soldierRow(s) {
   const open = state.open.has(s.id);
   const n = (s.requests || []).length;
-  const qualsCell = state.editingQuals === s.id
-    ? h("input", { class: "cell", id: `f-${s.id}-quals`, value: (s.quals || []).join(", "), placeholder: "הכשרות, מופרדות בפסיק", "aria-label": "הכשרות",
-        onblur: e => { s.quals = e.target.value.split(",").map(x => x.trim()).filter(Boolean); state.editingQuals = null; save(s.id); setTimeout(render, 0) },
-        onkeydown: e => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") { state.editingQuals = null; render() } } })
-    : h("div", { class: "quals", tabindex: state.canWrite ? 0 : null, title: state.canWrite ? "לחצו לעריכה" : null,
-        onclick: () => { if (!state.canWrite) return; state.editingQuals = s.id; render(); const i = document.getElementById(`f-${s.id}-quals`); i && i.focus() },
-        onkeydown: e => { if (e.key === "Enter") e.currentTarget.click() } },
-        (s.quals || []).length ? s.quals.map(q => h("span", { class: "chip" }, q)) : h("span", { class: "empty" }, "אין הכשרות"));
+  // a list field shown as chips; click to edit as comma-separated text
+  const chipsCell = (key, label, emptyText) => {
+    const editKey = `${s.id}:${key}`;
+    return state.editingQuals === editKey
+      ? h("input", { class: "cell", id: `f-${s.id}-${key}`, value: (s[key] || []).join(", "), placeholder: `${label}, מופרדות בפסיק`, "aria-label": label,
+          onblur: e => { s[key] = e.target.value.split(",").map(x => x.trim()).filter(Boolean); state.editingQuals = null; save(s.id); setTimeout(render, 0) },
+          onkeydown: e => { if (e.key === "Enter") e.target.blur(); if (e.key === "Escape") { state.editingQuals = null; render() } } })
+      : h("div", { class: "quals", tabindex: state.canWrite ? 0 : null, title: state.canWrite ? "לחצו לעריכה" : null,
+          onclick: () => { if (!state.canWrite) return; state.editingQuals = editKey; render(); const i = document.getElementById(`f-${s.id}-${key}`); i && i.focus() },
+          onkeydown: e => { if (e.key === "Enter") e.currentTarget.click() } },
+          (s[key] || []).length ? s[key].map(q => h("span", { class: "chip" + (key === "logistics" ? " logi" : "") }, q)) : h("span", { class: "empty" }, emptyText));
+  };
+  const qualsCell = chipsCell("quals", "הכשרות", "אין הכשרות");
+  const logiCell = chipsCell("logistics", "בקשות לוגיסטיות", "אין בקשות");
   return h("tr", { class: "soldier" + (open ? " open" : ""), "data-id": s.id },
     h("td", {}, h("div", { class: "rowctl" },
       state.canWrite ? h("button", { class: "grip", id: `grip-${s.id}`, title: "גררו כדי לשנות מיקום (או חיצים למעלה/למטה)", "aria-label": `שינוי מיקום של ${s.name || "חייל"}`,
@@ -372,6 +379,7 @@ function soldierRow(s) {
     h("td", {}, field(s, "ma", "ma", "מ.א")),
     h("td", {}, field(s, "phone", "ma phone", "טלפון")),
     h("td", {}, qualsCell),
+    h("td", {}, logiCell),
     h("td", {}, h("span", { class: "reqcount " + (n ? "has" : "none") }, n ? `${n} ${n === 1 ? "בקשה" : "בקשות"}` : "—")),
   );
 }
@@ -487,14 +495,14 @@ function detailRow(s) {
           h("button", { class: "btn", onclick: () => { state.confirm = null; render() } }, "ביטול"))
       : h("button", { class: "btn danger", onclick: () => { state.confirm = s.id; render() } }, "הסרת חייל"),
   ) : null;
-  return h("tr", { class: "detail" }, h("td", { colspan: 7 }, h("div", { class: "panel" }, box, actions)));
+  return h("tr", { class: "detail" }, h("td", { colspan: 8 }, h("div", { class: "panel" }, box, actions)));
 }
 
 function addSoldier(team) {
   if (!col) return;
   const ref = col.doc();
   const order = Math.max(-1, ...sortedTeam(team).map(s => s.order ?? 0)) + 1;
-  const s = { id: ref.id, team, order, name: "", role: DEFAULT_ROLE, ma: "", phone: "", quals: [], requests: [] };
+  const s = { id: ref.id, team, order, name: "", role: DEFAULT_ROLE, ma: "", phone: "", quals: [], logistics: [], requests: [] };
   state.soldiers.set(ref.id, s); state.open.add(ref.id); save(ref.id, "החייל נוסף"); render();
   document.getElementById(`f-${ref.id}-name`)?.focus();
 }
