@@ -7,17 +7,17 @@
 /* Layout: one column of stacked roster ledgers under a tab bar; each soldier row unfolds into a requests sub-ledger. */
 :root {
   --bg: #f1f2ec; --surface: #fbfbf8; --fg: #1d2119; --muted: #646b5c; --line: #d8dbcd;
-  --accent: #4b5a26; --accent-soft: #e3e8d3; --warn: #a94b18; --warn-soft: #f6e3d6; --ok: #2f6b2c; --ok-soft: #dcebd5;
+  --accent: #4b5a26; --accent-soft: #e3e8d3; --warn: #a94b18; --warn-soft: #f6e3d6; --ok: #2f6b2c; --ok-soft: #dcebd5; --off: #e9b4a6; --off-line: #c97a66; --off-fg: #7a2a14;
   --f-display: "Secular One", "Heebo", system-ui, sans-serif;
   --f-body: "Heebo", system-ui, "Segoe UI", Arial, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #14160f; --surface: #1c1f15; --fg: #e6e8dd; --muted: #9ca28e; --line: #343a2a;
-  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; --ok-soft: #1f3320; color-scheme: dark } }
+  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; --ok-soft: #1f3320; --off: #4a231a; --off-line: #7a3a2a; --off-fg: #f0b29e; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #14160f; --surface: #1c1f15; --fg: #e6e8dd; --muted: #9ca28e; --line: #343a2a;
-  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; --ok-soft: #1f3320; color-scheme: dark }
+  --accent: #b8c77c; --accent-soft: #2b3220; --warn: #e5915e; --warn-soft: #3a2619; --ok: #8fc48a; --ok-soft: #1f3320; --off: #4a231a; --off-line: #7a3a2a; --off-fg: #f0b29e; color-scheme: dark }
 
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.5 }
@@ -138,6 +138,10 @@ textarea.cell { resize: vertical; min-height: 34px; line-height: 1.4 }
 .day { font: inherit; color: inherit; text-align: start; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0; min-height: 96px; display: grid; grid-template-rows: auto 1fr; cursor: pointer; overflow: hidden }
 .day:hover { border-color: var(--accent) }
 .day.blank { background: transparent; border-style: dashed; cursor: default; opacity: .5 }
+.day.off, .off-sw { background: var(--off); border-color: var(--off-line); cursor: default }
+.day.off:hover { border-color: var(--off-line) }
+.day.off .dh, .day.off .db { color: var(--off-fg) }
+.off-sw { border: 1px solid var(--off-line) }
 .day .dh { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 3px 8px; font-family: var(--f-mono); font-weight: 500; font-size: .92rem }
 .day.good .dh { background: var(--ok-soft); color: var(--ok) }
 .day.bad .dh { background: var(--warn-soft); color: var(--warn) }
@@ -610,16 +614,33 @@ function dayStatus(day) {
   return { day, absent, crew, present: crew.length, counts, ok, short, overlap: !ok && !short.length && crew.length >= TOTAL_NEED };
 }
 
+// The platoon is on the line Monday to Monday, every other week, starting 09.11 (09–16.11 on, 17–22.11 off, ...).
+// 05–08.11 was off; the days before that were on.
+const CYCLE_START = "2026-11-09", CYCLE_DAYS = 14, ON_DAYS = 8;
+function onLine(day) {
+  if (day < "2026-11-05") return true;
+  if (day < CYCLE_START) return false;
+  const n = Math.round((new Date(day + "T12:00:00") - new Date(CYCLE_START + "T12:00:00")) / 864e5);
+  return n % CYCLE_DAYS < ON_DAYS;
+}
+
 function renderCalendar() {
   const box = document.getElementById("calendar");
   if (!state.ready) return;
   const M = MONTHS[calState.month];
   const first = new Date(M.y, M.m, 1), daysIn = new Date(M.y, M.m + 1, 0).getDate();
-  const statuses = []; for (let d = 1; d <= daysIn; d++) statuses.push(dayStatus(iso(M.y, M.m, d)));
-  const bad = statuses.filter(s => !s.ok).length;
+  const statuses = []; for (let d = 1; d <= daysIn; d++) { const day = iso(M.y, M.m, d); statuses.push(onLine(day) ? dayStatus(day) : { day, off: true }) }
+  const lineDays = statuses.filter(s => !s.off).length;
+  const bad = statuses.filter(s => !s.off && !s.ok).length;
   const cells = [];
   for (let i = 0; i < first.getDay(); i++) cells.push(h("div", { class: "day blank", "aria-hidden": "true" }));
   statuses.forEach((st, i) => {
+    if (st.off) {
+      cells.push(h("div", { class: "day off", id: `day-${st.day}`, title: "הפלגה לא בקו ביום הזה", "aria-label": `${i + 1} ב${M.name.split(" ")[0]}: הפלגה לא בקו` },
+        h("span", { class: "dh" }, h("span", {}, i + 1)),
+        h("span", { class: "db" }, h("span", {}, "לא בקו"))));
+      return;
+    }
     const miss = !st.ok ? (st.short.length ? "חסר: " + st.short.map(s => s.label).join(", ") : st.present < TOTAL_NEED ? `חסרים ${TOTAL_NEED - st.present} אנשים` : "אין שיבוץ בלי כפילות") : null;
     cells.push(h("button", { class: "day " + (st.ok ? "good" : "bad"), id: `day-${st.day}`, "aria-label": `${i + 1} ב${M.name.split(" ")[0]}: ${st.ok ? "יש מספיק אנשים" : "אין מספיק אנשים"}, ${st.absent.length} נעדרים`,
         onclick: () => openDay(st.day) },
@@ -634,10 +655,11 @@ function renderCalendar() {
         h("button", { class: "navbtn", "aria-label": "החודש הקודם", disabled: calState.month === 0, onclick: () => go(0), html: arrow("M6 3l5 5-5 5") }),
         h("h2", { "aria-live": "polite" }, M.name),
         h("button", { class: "navbtn", "aria-label": "החודש הבא", disabled: calState.month === MONTHS.length - 1, onclick: () => go(1), html: arrow("M10 3L5 8l5 5") })),
-      h("div", { class: "cal-sum" }, bad ? h("span", {}, h("b", {}, bad), ` ימים חסרים מתוך ${daysIn}`) : `כל ${daysIn} הימים תקינים`)),
+      h("div", { class: "cal-sum" }, !lineDays ? "הפלגה לא בקו החודש" : bad ? h("span", {}, h("b", {}, bad), ` ימים לא תקינים מתוך ${lineDays} ימים בקו`) : `כל ${lineDays} הימים בקו תקינים`)),
     h("div", { class: "legend" },
       h("span", {}, h("span", { class: "sw", style: "background:var(--ok-soft);border:1px solid var(--ok)" }), "תקין"),
       h("span", {}, h("span", { class: "sw", style: "background:var(--warn-soft);border:1px solid var(--warn)" }), "לא תקין"),
+      h("span", {}, h("span", { class: "sw off-sw" }), "לא בקו"),
       h("span", {}, "לחצו על יום כדי לראות מי נעדר")),
     h("div", { class: "grid7" }, ...WEEKDAYS.map(w => h("div", { class: "wd" }, w)), ...cells),
     h("details", { class: "rules" }, h("summary", {}, "איך נקבע אם תקין"),
